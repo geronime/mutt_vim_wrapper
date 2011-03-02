@@ -1,6 +1,7 @@
 #!/usr/bin/env perl
 
 # Truncate signature in the original mail of group/reply
+# (wrapper script for mutt)
 
 open F, "+<$ARGV[0]" or die "$ARGV[0]: $!";
 $trunc = undef; # default unknown (undefined)
@@ -9,7 +10,17 @@ while ( <F> ) {
 		next if defined $trunc; # we already found subject
 		$trunc = /^subject: ?re:/i ? 1 : 0;
 	} elsif ( $trunc and /^> ?-- ?$/ ) { # only if to truncate
-		while ( <F> ) { next if /^>/; }
+		$blank_ln = 0; # count empty lines in signature
+		while ( <F> ) {
+			if ( /^>\s*$/ ) {
+				++$blank_ln;
+			} elsif ( /^>/ ) {
+				last if $blank_ln >= 2; # signature terminated with 2++ empty lines
+				$blank_ln = 0;
+			} else {
+				last;
+			}
+		}
 	}
 	push @m, $_ if defined $_;
 }
