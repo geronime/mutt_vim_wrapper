@@ -11,15 +11,24 @@ while ( <F> ) {
 		$trunc = /^subject: ?re:/i ? 1 : 0;
 	} elsif ( $trunc and /^> ?-- ?$/ ) { # only if to truncate
 		$blank_ln = 0; # count empty lines in signature
+		$prevline = undef;
+		  # store previous line because some signatures do not end
+		  # with two empty lines:
+		  # recognize with the next '> >' citation level
+		  # and keep the previous line - header of the citation
 		while ( <F> ) {
 			if ( /^>\s*$/ ) {
 				++$blank_ln;
+			} elsif ( /^> >/ ) { # found previous message?
+				push @m, $prevline;
+				last;
 			} elsif ( /^>/ ) {
 				last if $blank_ln >= 2; # signature terminated with 2++ empty lines
 				$blank_ln = 0;
 			} else {
 				last;
 			}
+			$prevline = $_;
 		}
 	}
 	push @m, $_ if defined $_;
