@@ -30,6 +30,9 @@ MAIN: while ( <F> ) {
 			if ( /^$citation_pfx ?>/ ) {       # deeper citation level found
 				push @m, $prevline; # add previous line - probably the citation header
 				last;
+			} elsif (                          # forwarded message
+					/^$citation_pfx\s*--+\s+(?:F|End f)orwarded message\s+--+\s*$/ ) {
+				last;
 			} elsif ( /^$citation_pfx\s*$/ ) { # blank line, add to counter
 				++$blank_ln;
 			} else { # same citation level but not empty

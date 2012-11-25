@@ -7,9 +7,9 @@ mail client writing their e-mails in [VIm] (http://www.vim.org/).
 
 ## Features
 
-* all the signatures are removed only in case of group/reply
++ all the signatures are removed only in case of group/reply
   (determined by `/^subject: ?re:/i` line)
-* trailing empty lines are removed (cited ones as well)
++ trailing empty lines are removed (cited ones as well)
 
 ## Usage
 
@@ -41,22 +41,25 @@ line is required.
 
 The script should cover following scenarios:
 
-* regular correct signature on the bottom of the e-mail
-* any regular signature in deeper citation levels
-* signature in top-posting above the citations
+  + regular correct signature on the bottom of the e-mail
+  + any regular signature in deeper citation levels
+  + signature in top-posting above the citations
 
 The algorithm in a nutshell:
 
-* signature is detected by a line containing just two hyphens and a space.
-  * the space is optional because of some non-standard signatures
-  * such a line can be found on all citation levels
-* when the signature line is found, the citation level is saved and
-  consecutive lines are skipped until:
-  * two or more empty lines within the same level of citation are found
-  * higher citation level is reached
-    (the line beginning does not match the saved citation level string)
-  * deeper citation level is reached (the line beginning matches more
-    citation characters than just the saved ones)
-  * in the last case the preceding line is given back as it is probably
-    the next citation header
+  + signature is detected by a line containing just two hyphens and a space.
+    + the space is optional because of some non-standard signatures
+    + such a line can be found on all citation levels
+  + when the signature line is found, the citation level is saved and
+    consecutive lines are skipped until:
+    + two or more empty lines within the same level of citation are found
+    + higher citation level is reached
+      (the line beginning does not match the saved citation level string)
+    + deeper citation level is reached
+      + the line beginning matches more citation chars than just the saved ones,
+      + or the line is matching pattern
+        `/^--+\s+(?:F|End f)orwarded message\s+--+\s*$/`
+        (ending is included because of signatures inside the forwarded message)
+    + in the last case the preceding line is given back as it is probably
+      the next citation header
 
